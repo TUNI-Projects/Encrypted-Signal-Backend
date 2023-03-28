@@ -8,6 +8,12 @@ class UserSerializer(ModelSerializer):
         model = User
         fields = ["email", "password", "username"]
     
+    def create(self, validated_data):
+        user = User.objects.create(**validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+     
     @staticmethod
     def validate_email(val):
         if User.objects.filter(email=val).count() >=1:

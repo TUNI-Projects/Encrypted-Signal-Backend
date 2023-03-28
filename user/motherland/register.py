@@ -27,6 +27,7 @@ class RegisterAPI(APIView):
         serializer = UserSerializer(data = data)
         if serializer.is_valid():
             new_user = serializer.save()
+            
             return JsonResponse({
                 "message": "new user created successfully",
                 "username": new_user.username,
