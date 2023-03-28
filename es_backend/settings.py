@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # -----------------------
     'user.apps.UserConfig',
     'share.apps.ShareConfig',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
