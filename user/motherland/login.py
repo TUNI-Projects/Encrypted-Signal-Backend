@@ -15,6 +15,7 @@ class LoginAPI(APIView):
             if field not in data:
                 return JsonResponse(
                     {
+                        "status": 400,
                         "message": "Missing Required Parameter. {} is required".format(field)
                     }, status = 400
                 )
@@ -26,6 +27,7 @@ class LoginAPI(APIView):
         
         if curr_user is None:
             return JsonResponse({
+                "status": 404,
                 "message": "Email and password doesn't match!"
             }, status=404)
         else:
@@ -37,12 +39,14 @@ class LoginAPI(APIView):
                 
                 # TODO: create some sort of cookie/token/session stuff here.
                 return JsonResponse({
+                    "status": 202,
                     "message": "login successful!",
                     "username": curr_user.username
                 }, status=202)
             else:
                 return JsonResponse({
+                    "status": 400,
                     "message": "email and password don't match!"
                 }, status=400)
         
-        
+

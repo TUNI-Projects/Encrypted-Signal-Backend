@@ -17,6 +17,7 @@ class RegisterAPI(APIView):
             if item not in data:
                 return JsonResponse(
                     {
+                        "status": 400,
                         "message": "Missing Required Parameter. {} is required".format(item)
                     }, status = 400
                 )
@@ -29,6 +30,7 @@ class RegisterAPI(APIView):
             new_user = serializer.save()
             
             return JsonResponse({
+                "status": 201,
                 "message": "new user created successfully",
                 "username": new_user.username,
                 "email": new_user.email,
@@ -36,7 +38,8 @@ class RegisterAPI(APIView):
             }, status=201)
         else:
             return JsonResponse({
+                "status": 400,
                 "message": "user registration failed! Error: {}".format(serializer.errors)
             }, status=400)
             
-        
+
