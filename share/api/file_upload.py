@@ -11,6 +11,13 @@ class FileUploadAPI(APIView):
     
     def post(self, request):
         data = request.data
+        
+        for item in self.REQUIRED_PARAMETERS:
+            if item not in data:
+                return JsonResponse({
+                    "message": "Missing required field {}".format(item)
+                }, status=400)
+    
         original_filename = data['file']
         username = data["username"]
         
@@ -18,7 +25,7 @@ class FileUploadAPI(APIView):
             owner_obj = User.objects.get(username=username)
         except User.DoesNotExist:
             return JsonResponse({
-                "message": "Invalid Request"
+                "message": "Invalid Request."
             }, status=403)
         
         data["original_filename"] = original_filename.name
@@ -28,7 +35,7 @@ class FileUploadAPI(APIView):
         if upload_serializer.is_valid():
             upload_serializer.save()
             return JsonResponse({
-                "data": upload_serializer.data
+                "message": "File uploaded successfully!"
             }, status=201)
         else:
             return JsonResponse({
