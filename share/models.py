@@ -6,7 +6,7 @@ from uuid import uuid4
 
 def update_filename(instance, filename):
     path="files/"
-    format = "{}{}".format(uuid4(), filename)
+    format = "{}_{}".format(uuid4(), filename)
     return os.path.join(path, format)
 
 # Create your models here.

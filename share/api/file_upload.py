@@ -7,9 +7,9 @@ from user.models import User
 class FileUploadAPI(APIView):
     
     parser_classes = (MultiPartParser, FormParser)
-    REQUIRED_PARAMETERS = ("file", "username")
+    REQUIRED_PARAMETERS = ("file",)
     
-    def post(self, request):
+    def post(self, request, username = None):
         data = request.data
         
         for item in self.REQUIRED_PARAMETERS:
@@ -19,7 +19,6 @@ class FileUploadAPI(APIView):
                 }, status=400)
     
         original_filename = data['file']
-        username = data["username"]
         
         try:
             owner_obj = User.objects.get(username=username)
@@ -33,7 +32,8 @@ class FileUploadAPI(APIView):
         
         upload_serializer = UploadSerializer(data = data)
         if upload_serializer.is_valid():
-            upload_serializer.save()
+            res = upload_serializer.save()
+            print("File uploaded ", res.file)
             return JsonResponse({
                 "message": "File uploaded successfully!"
             }, status=201)
