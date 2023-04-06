@@ -7,16 +7,14 @@ class ListOfFiles(APIView):
     
     REQURIED_PARAMs = ("username", )
     
-    def get(self, request):
-        data = request.data
-        
-        if "username" not in data:
+    def get(self, request, username: None):
+        if username is None:
             return JsonResponse({
                 "message": "Missing parameter `username` is missing! Invalid Request"
             }, status=400)
         
         try:
-            user_obj = User.objects.get(username=data['username'])
+            user_obj = User.objects.get(username=username)
         except User.DoesNotExist:
             return JsonResponse({
                 "message": "Invalid request",
