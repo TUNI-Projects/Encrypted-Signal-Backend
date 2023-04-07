@@ -27,7 +27,7 @@ class ListOfFiles(APIView):
             response.append({
                 "file_id": uploaded_file.index,
                 "original_filename": uploaded_file.original_filename,
-                "file_path": uploaded_file.file.name,
+                "file_path": None,
                 "uploaded_at": uploaded_file.uploaded_at,
             })
         
