@@ -16,3 +16,8 @@ class FileModel(models.Model):
     file = models.FileField(upload_to=update_filename)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     file_owner = models.ForeignKey(User, on_delete=models.PROTECT)
+    
+class ShareModel(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    file = models.ForeignKey(FileModel, on_delete=models.CASCADE)
+    shared_with = models.ForeignKey(User, on_delete=models.PROTECT)
