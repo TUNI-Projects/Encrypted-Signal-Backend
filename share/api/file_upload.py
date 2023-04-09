@@ -30,7 +30,7 @@ class FileUploadAPI(APIView):
             return JsonResponse({
                 "message": "Invalid Request."
             }, status=403)
-        
+
         shared_obj = None
         # this is optional
         if shared_with is not None:
@@ -38,9 +38,9 @@ class FileUploadAPI(APIView):
                 shared_obj = User.objects.get(email=shared_with)
             except User.DoesNotExist:
                 return JsonResponse({
-                    "message":"User with email address: `{}` does not exist!".format(shared_with)
+                    "message": "User with email address: `{}` does not exist!".format(shared_with)
                 }, status=404)
-            
+
             if owner_obj.pk == shared_obj.pk:
                 # File Owner and Shared User are same.
                 return JsonResponse({
@@ -57,19 +57,22 @@ class FileUploadAPI(APIView):
             payload = {
                 "message": "File Uploaded Successfully!"
             }
-            
+
             # share with people if needed.
             if shared_obj is not None:
-                share_serializer = ShareSerializer(data = {
+                share_serializer = ShareSerializer(data={
                     "file": res.pk,
                     "shared_with": shared_obj.pk,
                 })
                 if share_serializer.is_valid():
                     share_serializer.save()
-                    payload["message"] = payload["message"] + " File Shared with `{}`".format(shared_with)
+                    payload["message"] = payload["message"] + \
+                        " File Shared with `{}`".format(shared_with)
                 else:
                     print(share_serializer.errors)
-                    payload["message"] = payload["message"] + " Unabled to share with `{}` due to some internal error!".format(shared_with)
+                    payload["message"] = payload["message"] + \
+                        " Unabled to share with `{}` due to some internal error!".format(
+                            shared_with)
                     payload["share_error"] = share_serializer.errors
             return JsonResponse(payload, status=201)
         else:

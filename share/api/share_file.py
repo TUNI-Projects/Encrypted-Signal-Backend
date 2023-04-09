@@ -36,14 +36,14 @@ class ShareAPI(APIView):
             return JsonResponse({
                 "message": "You aren't allowed to share this file!"
             }, status=401)
-        
+
         try:
             share_user = User.objects.get(email=data["share_email"])
         except User.DoesNotExist:
             return JsonResponse({
                 "message": "User with email `{}` doesn't exist!".format(data["share_email"])
             }, status=404)
-        
+
         if file_obj.file_owner.pk == share_user.pk:
             # File Owner and Shared User are same.
             return JsonResponse({

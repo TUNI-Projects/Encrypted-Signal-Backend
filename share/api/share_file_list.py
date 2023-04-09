@@ -3,20 +3,22 @@ from django.http import JsonResponse
 from share.models import ShareModel
 from user.models import User
 
+
 class ShareFileListAPI(APIView):
-    
+
     def get(self, request, username):
         # sends all the files shared with this user.
         try:
-            user_obj = User.objects.get(username= username)
+            user_obj = User.objects.get(username=username)
         except User.DoesNotExist:
             return JsonResponse({
                 "message": "Invalid Request!",
             }, status=404)
-            
-        all_shared_file = list(ShareModel.objects.filter(shared_with=user_obj.pk))
+
+        all_shared_file = list(
+            ShareModel.objects.filter(shared_with=user_obj.pk))
         payload = list()
-        
+
         for shared_file in all_shared_file:
             payload.append({
                 "file_id": shared_file.file.index,

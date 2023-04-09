@@ -3,26 +3,27 @@ from django.http import JsonResponse
 from user.models import User
 from share.models import FileModel
 
+
 class ListOfFiles(APIView):
-    
+
     REQURIED_PARAMs = ("username", )
-    
+
     def get(self, request, username: None):
         if username is None:
             return JsonResponse({
                 "message": "Missing parameter `username` is missing! Invalid Request"
             }, status=400)
-        
+
         try:
             user_obj = User.objects.get(username=username)
         except User.DoesNotExist:
             return JsonResponse({
                 "message": "Invalid request",
             }, status=404)
-        
-        list_of_files = list(FileModel.objects.filter(file_owner = user_obj.pk))
+
+        list_of_files = list(FileModel.objects.filter(file_owner=user_obj.pk))
         response = []
-        
+
         for uploaded_file in list_of_files:
             response.append({
                 "file_id": uploaded_file.index,
@@ -31,7 +32,7 @@ class ListOfFiles(APIView):
                 "uploaded_at": uploaded_file.uploaded_at,
                 "file_type": uploaded_file.file_type,
             })
-        
+
         return JsonResponse({
             "total": len(list_of_files),
             "files": response,
