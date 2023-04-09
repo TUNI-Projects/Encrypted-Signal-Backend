@@ -9,7 +9,7 @@ class FileUploadAPI(APIView):
 
     parser_classes = (MultiPartParser, FormParser)
     REQUIRED_PARAMETERS = ("file",)
-    OPTIONAL_PARAMETERS = ("shared_email",)
+    OPTIONAL_PARAMETERS = ("shared_email", "file_type",)
 
     def post(self, request, username=None):
         data = request.data
@@ -21,6 +21,7 @@ class FileUploadAPI(APIView):
                 }, status=400)
 
         shared_with = data.get("shared_email", None)
+        file_type = data.get("file_type", "")
         original_filename = data['file']
 
         try:
@@ -39,9 +40,16 @@ class FileUploadAPI(APIView):
                 return JsonResponse({
                     "message":"User with email address: `{}` does not exist!".format(shared_with)
                 }, status=404)
+            
+            if owner_obj.pk == shared_obj.pk:
+                # File Owner and Shared User are same.
+                return JsonResponse({
+                    "message": "You can't share this file with yourself."
+                }, status=400)
 
         data["original_filename"] = original_filename.name
         data["file_owner"] = owner_obj.pk
+        data["file_type"] = file_type
 
         upload_serializer = UploadSerializer(data=data)
         if upload_serializer.is_valid():
