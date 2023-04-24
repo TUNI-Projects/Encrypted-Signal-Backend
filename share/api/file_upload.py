@@ -50,7 +50,7 @@ class FileUploadAPI(APIView):
         serializer_payload["encrypted_data"] = data["encrypted_data"]
         serializer_payload["original_filename"] = data['filename']
         serializer_payload["file_owner"] = owner_obj.pk
-        serializer_payload["file_type"] = file_type
+        serializer_payload["file_type"] = data["file_type"]
 
         upload_serializer = UploadSerializer(data=serializer_payload)
         if upload_serializer.is_valid():
