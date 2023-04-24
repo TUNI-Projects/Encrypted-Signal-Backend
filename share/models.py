@@ -13,7 +13,8 @@ def update_filename(instance, filename):
 class FileModel(models.Model):
     index = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     original_filename = models.CharField(max_length=255, blank=True)
-    file = models.FileField(upload_to=update_filename)
+    file = models.FileField(upload_to=update_filename, blank=True)
+    encrypted_data = models.TextField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
     file_owner = models.ForeignKey(User, on_delete=models.PROTECT)
     file_type = models.CharField(max_length=255, blank=True)

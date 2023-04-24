@@ -8,7 +8,7 @@ from user.models import User
 class FileUploadAPI(APIView):
 
     parser_classes = (MultiPartParser, FormParser)
-    REQUIRED_PARAMETERS = ("file",)
+    REQUIRED_PARAMETERS = ("encrypted_data", "filename")
     OPTIONAL_PARAMETERS = ("shared_email", "file_type",)
 
     def post(self, request, username=None):
@@ -22,7 +22,6 @@ class FileUploadAPI(APIView):
 
         shared_with = data.get("shared_email", None)
         file_type = data.get("file_type", "")
-        original_filename = data['file']
 
         try:
             owner_obj = User.objects.get(username=username)
@@ -46,12 +45,14 @@ class FileUploadAPI(APIView):
                 return JsonResponse({
                     "message": "You can't share this file with yourself."
                 }, status=400)
+                
+        serializer_payload = {}
+        serializer_payload["encrypted_data"] = data["encrypted_data"]
+        serializer_payload["original_filename"] = data['filename']
+        serializer_payload["file_owner"] = owner_obj.pk
+        serializer_payload["file_type"] = file_type
 
-        data["original_filename"] = original_filename.name
-        data["file_owner"] = owner_obj.pk
-        data["file_type"] = file_type
-
-        upload_serializer = UploadSerializer(data=data)
+        upload_serializer = UploadSerializer(data=serializer_payload)
         if upload_serializer.is_valid():
             res = upload_serializer.save()
             payload = {
