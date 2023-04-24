@@ -31,18 +31,20 @@ class LoginAPI(APIView):
                 "message": "Email and password doesn't match!"
             }, status=404)
         else:
-            print(data['password'])
-            print(curr_user.password)
             if check_password(data["password"], curr_user.password):
                 curr_user.last_login = datetime.utcnow()
                 curr_user.save()
                 
                 # TODO: create some sort of cookie/token/session stuff here.
-                return JsonResponse({
+                response = JsonResponse({
                     "status": 202,
                     "message": "login successful!",
                     "username": curr_user.username
                 }, status=202)
+                response.set_cookie("hello_world", "potatochips!", domain="http://localhost:3000", max_age=10000, httponly=True)
+                response.set_cookie("hello_world_2", "dorito")
+                
+                return response
             else:
                 return JsonResponse({
                     "status": 400,

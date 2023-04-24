@@ -9,6 +9,7 @@ class ListOfFiles(APIView):
     REQURIED_PARAMs = ("username", )
 
     def get(self, request, username: None):
+        print(request.headers)
         if username is None:
             return JsonResponse({
                 "message": "Missing parameter `username` is missing! Invalid Request"

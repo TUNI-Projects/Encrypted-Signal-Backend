@@ -10,6 +10,7 @@ class ShareAPI(APIView):
     REQUIRED_PARAMETERS = ("share_email", "file_id",)
 
     def post(self, request, username):
+        print(request.headers)
         data = request.data
 
         for item in self.REQUIRED_PARAMETERS:
