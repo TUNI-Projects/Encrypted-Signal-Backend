@@ -38,8 +38,12 @@ class ListOfFiles(APIView):
             "total": len(list_of_files),
             "files": response,
         })
-        expires = datetime.now() + timedelta(minutes=30)
-        response.set_cookie('mycookie', 'myvalue', domain='',
-                            path='/', expires=expires, secure=True, samesite='None')
-        response['SameSite'] = 'None'
+        # expires = datetime.now() + timedelta(minutes=30)
+        # response.set_cookie('mycookie', 'myvalue',
+        #                     domain='',
+        #                     path='/',
+        #                     expires=expires,
+        #                     secure=True,
+        #                     samesite='None')
+        # response['SameSite'] = 'None'
         return response
