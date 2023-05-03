@@ -39,6 +39,7 @@ class ListOfFiles(APIView):
             "files": response,
         })
         expires = datetime.now() + timedelta(minutes=30)
-        response.set_cookie('mycookie', 'myvalue', domain='.github.io',
-                            path='/Encrypted-Signal', expires=expires, secure=True, samesite='Lax')
+        response.set_cookie('mycookie', 'myvalue', domain='',
+                            path='/', expires=expires, secure=True, samesite='None')
+        response['SameSite'] = 'None'
         return response
