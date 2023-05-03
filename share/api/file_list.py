@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from django.http import JsonResponse
 from user.models import User
 from share.models import FileModel
+from datetime import datetime, timedelta
 
 
 class ListOfFiles(APIView):
@@ -34,7 +35,11 @@ class ListOfFiles(APIView):
                 "file_type": uploaded_file.file_type,
             })
 
-        return JsonResponse({
+        response = JsonResponse({
             "total": len(list_of_files),
             "files": response,
-        }, status=200)
+        })
+        expires = datetime.now() + timedelta(minutes=30)
+        response.set_cookie('mycookie', 'myvalue', domain='tuni-projects.github.io/',
+                            path='/Encrypted-Signal', expires=expires, secure=True, samesite='Lax')
+        return response
