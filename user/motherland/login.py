@@ -1,9 +1,12 @@
-from rest_framework.views import APIView
-from django.http import JsonResponse
-from user.models import User
+from datetime import datetime
+
 from django.contrib.auth.hashers import check_password
-from datetime import datetime, timedelta
 from django.contrib.sessions.backends.db import SessionStore
+from django.http import JsonResponse
+from rest_framework.views import APIView
+from share.utility.cookie import cookie_monster
+from es_backend.settings import DEBUG
+from user.models import User
 
 
 class LoginAPI(APIView):
@@ -12,6 +15,7 @@ class LoginAPI(APIView):
 
     def post(self, request):
         data = request.data
+        IS_DEBUG = DEBUG
         for field in self.REQUIRED_PARAMS:
             if field not in data:
                 return JsonResponse(
@@ -35,36 +39,24 @@ class LoginAPI(APIView):
                 curr_user.last_login = datetime.utcnow()
                 curr_user.save()
 
-                # TODO: create some sort of cookie/token/session stuff here.
                 response = JsonResponse({
                     "status": 202,
                     "message": "login successful!",
                     "username": curr_user.username
                 }, status=202)
 
-                # give 12 hours of session time for username
-                expires = datetime.now() + timedelta(hours=12)
-                response.set_cookie('username', curr_user.username,
-                                    domain='',
-                                    path='/',
-                                    expires=expires,
-                                    secure=True,
-                                    samesite='None')
-                
                 session_store = SessionStore()
                 session_store["username"] = curr_user.username
                 session_store.create()
                 session_id = session_store.session_key
-                response.set_cookie(
-                    key="sessionId",
-                    value=session_id,
-                    expires=expires,
-                    domain='',
-                    path='/',
-                    secure=True,
-                    samesite='None'
-                )
-                response['SameSite'] = 'None'
+
+                response = cookie_monster(
+                    response, "username", curr_user.username)
+                response = cookie_monster(response, "sessionId", session_id)
+                if IS_DEBUG:
+                    response['SameSite'] = 'Strict'
+                else:
+                    response['SameSite'] = 'None'
                 return response
             else:
                 return JsonResponse({

@@ -1,31 +1,39 @@
-from rest_framework import authentication
-from rest_framework import exceptions
 from django.contrib.sessions.backends.db import SessionStore
+from django.http import JsonResponse
 from user.models import User
+import functools
 
 
-def auth_required(view_func):
-    def wrapper(request, *args, **kwargs):
-        # Check if the user is authenticated
-        session_id = None
-        if 'Cookie' in request.headers:
-            cookies = request.headers['Cookie']
-            for cookie in cookies.split(';'):
-                if 'sessionId' in cookie:
-                    session_id = cookie.split('=')[1]
-                    break
+def protected(function):
+    @functools.wraps(function)
+    def wrapper(self, request, *args, **kwargs):
+        print(request.headers)
+        cookies = request.headers.get("Cookie")
+        for cookie in cookies.split(';'):
+            if 'sessionId' in cookie:
+                session_id = cookie.split('=')[1]
+                break
+
+        if session_id is None:
+            return JsonResponse({
+                "message": "Authentication Failure!"
+            }, status=401)
+
+        try:
             session_obj = SessionStore(session_key=session_id)
-            print(session_obj)
-            try:
-                user = User.objects.get(username=session_obj["username"])        
-                request.user = user
-                print(request.user)
-            except User.DoesNotExist:
-                raise exceptions.AuthenticationFailed('Authentication required!')
-        else:
-            exceptions.AuthenticationFailed('Authentication required!')
+            username = session_obj["username"]
+        except KeyError:
+            return JsonResponse({
+                "message": "Authentication Failure!"
+            }, status=401)
+            
+        try:
+            user_obj = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return JsonResponse({
+                "message": "Authentication Failure!",
+            }, status=404)
 
-        # Call the view function if authenticated
-        return view_func(request, *args, **kwargs)
-
+        request.user = user_obj
+        return function(self, request, *args, **kwargs)
     return wrapper

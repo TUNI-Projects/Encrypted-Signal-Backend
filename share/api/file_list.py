@@ -1,28 +1,16 @@
-from rest_framework.views import APIView
 from django.http import JsonResponse
-from user.models import User
+from rest_framework.views import APIView
+
 from share.models import FileModel
-from share.utility.auth import auth_required
+from share.utility.auth import protected
+
 
 
 class ListOfFiles(APIView):
 
-    REQURIED_PARAMs = ("username", )
-
-    def get(self, request, username: None):
-        if username is None:
-            return JsonResponse({
-                "message": "Missing parameter `username` is missing! Invalid Request"
-            }, status=400)
-        
-        print(request.user)
-        try:
-            user_obj = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return JsonResponse({
-                "message": "Invalid request",
-            }, status=404)
-
+    @protected
+    def get(self, request):
+        user_obj = request.user
         list_of_files = list(FileModel.objects.filter(file_owner=user_obj.pk))
         response = []
 

@@ -3,14 +3,16 @@ from rest_framework.views import APIView
 from share.serializer import ShareSerializer
 from share.models import ShareModel, FileModel
 from user.models import User
+from share.utility.auth import protected
+from django.core.exceptions import ValidationError
 
 
 class ShareAPI(APIView):
 
     REQUIRED_PARAMETERS = ("share_email", "file_id",)
 
-    def post(self, request, username):
-        print(request.headers)
+    @protected
+    def post(self, request):
         data = request.data
 
         for item in self.REQUIRED_PARAMETERS:
@@ -19,16 +21,10 @@ class ShareAPI(APIView):
                     "message": "Missing required field `{}`".format(item)
                 }, status=400)
 
-        try:
-            curr_usr_obj = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return JsonResponse({
-                "message": "Invalid Request."
-            }, status=403)
-
+        curr_usr_obj = request.user
         try:
             file_obj = FileModel.objects.get(index=data["file_id"])
-        except FileModel.DoesNotExist:
+        except (FileModel.DoesNotExist, ValidationError):
             return JsonResponse({
                 "message": "File Does not exist!"
             }, status=404)

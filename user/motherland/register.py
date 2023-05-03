@@ -2,8 +2,10 @@ from rest_framework.views import APIView
 from django.http import JsonResponse
 from uuid import uuid4
 from user.serializer import UserSerializer
-from datetime import datetime, timedelta
+from share.utility.cookie import cookie_monster
 from django.contrib.sessions.backends.db import SessionStore
+from es_backend.settings import DEBUG
+
 
 class RegisterAPI(APIView):
 
@@ -13,8 +15,9 @@ class RegisterAPI(APIView):
     ]
 
     def post(self, request):
+        IS_DEBUG = DEBUG
+        
         data = request.data
-
         for item in self.REQUIRED_PARAM:
             if item not in data:
                 return JsonResponse(
@@ -38,29 +41,19 @@ class RegisterAPI(APIView):
                 "email": new_user.email,
                 "password": "has been set!"
             }, status=201)
-            # give 12 hours of session time for username
-            expires = datetime.now() + timedelta(hours=12)
-            response.set_cookie('username', new_user.username,
-                                domain='',
-                                path='/',
-                                expires=expires,
-                                secure=True,
-                                samesite='None')
-            
+
             session_store = SessionStore()
             session_store["username"] = new_user.username
             session_store.create()
             session_id = session_store.session_key
-            response.set_cookie(
-                key="sessionId",
-                value=session_id,
-                expires=expires,
-                domain='',
-                path='/',
-                secure=True,
-                samesite='None'
-            )
-            response['SameSite'] = 'None'
+
+            response = cookie_monster(
+                response, "username", new_user.username)
+            response = cookie_monster(response, "sessionId", session_id)
+            if IS_DEBUG:
+                response['SameSite'] = 'Strict'
+            else:
+                response['SameSite'] = 'None'
             return response
         else:
             return JsonResponse({
