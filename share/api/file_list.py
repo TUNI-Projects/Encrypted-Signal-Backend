@@ -10,7 +10,6 @@ class ListOfFiles(APIView):
     REQURIED_PARAMs = ("username", )
 
     def get(self, request, username: None):
-        print(request.headers)
         if username is None:
             return JsonResponse({
                 "message": "Missing parameter `username` is missing! Invalid Request"
@@ -40,6 +39,6 @@ class ListOfFiles(APIView):
             "files": response,
         })
         expires = datetime.now() + timedelta(minutes=30)
-        response.set_cookie('mycookie', 'myvalue', domain='tuni-projects.github.io/',
+        response.set_cookie('mycookie', 'myvalue', domain='tuni-projects.github.io',
                             path='/Encrypted-Signal', expires=expires, secure=True, samesite='Lax')
         return response
