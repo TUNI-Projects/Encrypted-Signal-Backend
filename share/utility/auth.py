@@ -7,7 +7,6 @@ import functools
 def protected(function):
     @functools.wraps(function)
     def wrapper(self, request, *args, **kwargs):
-        print(request.headers)
         cookies = request.headers.get("Cookie")
         for cookie in cookies.split(';'):
             if 'sessionId' in cookie:

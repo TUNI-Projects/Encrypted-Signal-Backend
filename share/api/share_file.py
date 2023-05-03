@@ -50,7 +50,6 @@ class ShareAPI(APIView):
         try:
             share_obj = ShareModel.objects.get(
                 file=file_obj.pk, shared_with=share_user.pk)
-            print(share_obj)
 
             return JsonResponse({
                 "message": "This file `{}` is already shared with `{}`".format(file_obj.original_filename, data["share_email"])
