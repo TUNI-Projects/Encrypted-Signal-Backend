@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-import sys, os
+import sys
+import os
 from pathlib import Path
 from decouple import config
- 
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # -----------------------
     'user.apps.UserConfig',
     'share.apps.ShareConfig',
@@ -61,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+
 ]
 
 ROOT_URLCONF = 'es_backend.urls'
@@ -153,10 +154,10 @@ AUTH_USER_MODEL = 'user.User'
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-  # TODO add production URL here later.
-  "https://tuni-projects.github.io",
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    # TODO add production URL here later.
+    "https://tuni-projects.github.io",
 )
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -177,8 +178,10 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760 # nearly 10 MB.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # nearly 10 MB.
