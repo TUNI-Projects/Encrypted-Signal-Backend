@@ -156,6 +156,7 @@ CORS_ORIGIN_WHITELIST = (
   'http://localhost:3000',
   'http://127.0.0.1:3000',
   # TODO add production URL here later.
+  "https://tuni-projects.github.io",
 )
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -180,4 +181,4 @@ CORS_ALLOW_HEADERS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600 # nearly 100 MB.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760 # nearly 10 MB.
