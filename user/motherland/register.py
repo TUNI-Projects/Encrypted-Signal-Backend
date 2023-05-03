@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from uuid import uuid4
 from user.serializer import UserSerializer
 from datetime import datetime, timedelta
-
+from django.contrib.sessions.backends.db import SessionStore
 
 class RegisterAPI(APIView):
 
@@ -46,7 +46,22 @@ class RegisterAPI(APIView):
                                 expires=expires,
                                 secure=True,
                                 samesite='None')
+            
+            session_store = SessionStore()
+            session_store["username"] = new_user.username
+            session_store.create()
+            session_id = session_store.session_key
+            response.set_cookie(
+                key="sessionId",
+                value=session_id,
+                expires=expires,
+                domain='',
+                path='/',
+                secure=True,
+                samesite='None'
+            )
             response['SameSite'] = 'None'
+            return response
         else:
             return JsonResponse({
                 "status": 400,

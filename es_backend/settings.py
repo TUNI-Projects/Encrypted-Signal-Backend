@@ -28,7 +28,7 @@ SECRET_KEY = config("SECRET_KEY", None)
 if SECRET_KEY is None:
     sys.exit("SECRET KEY CANNOT BE NONE!")
 
-IS_DEBUG = True if config("DEBUG", "False") == True else False
+IS_DEBUG = True if config("DEBUG", "False") == "True" else False
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = IS_DEBUG
@@ -152,6 +152,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # custom user model
 AUTH_USER_MODEL = 'user.User'
 
+
+# CORS
+
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
@@ -180,8 +183,17 @@ CORS_ALLOW_HEADERS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-
+# Media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # nearly 10 MB.
+
+
+# Session
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_AGE = 43200  # 12 hours in seconds 
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_SAVE_EVERY_REQUEST = False

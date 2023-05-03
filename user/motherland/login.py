@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from user.models import User
 from django.contrib.auth.hashers import check_password
 from datetime import datetime, timedelta
+from django.contrib.sessions.backends.db import SessionStore
 
 
 class LoginAPI(APIView):
@@ -11,7 +12,6 @@ class LoginAPI(APIView):
 
     def post(self, request):
         data = request.data
-
         for field in self.REQUIRED_PARAMS:
             if field not in data:
                 return JsonResponse(
@@ -50,6 +50,20 @@ class LoginAPI(APIView):
                                     expires=expires,
                                     secure=True,
                                     samesite='None')
+                
+                session_store = SessionStore()
+                session_store["username"] = curr_user.username
+                session_store.create()
+                session_id = session_store.session_key
+                response.set_cookie(
+                    key="sessionId",
+                    value=session_id,
+                    expires=expires,
+                    domain='',
+                    path='/',
+                    secure=True,
+                    samesite='None'
+                )
                 response['SameSite'] = 'None'
                 return response
             else:
