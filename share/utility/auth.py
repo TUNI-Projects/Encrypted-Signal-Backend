@@ -8,6 +8,11 @@ def protected(function):
     @functools.wraps(function)
     def wrapper(self, request, *args, **kwargs):
         cookies = request.headers.get("Cookie")
+        if cookies is None:
+            return JsonResponse({
+                "message": "Authentication Failure!"
+            }, status=401)
+
         for cookie in cookies.split(';'):
             if 'sessionId' in cookie:
                 session_id = cookie.split('=')[1]
@@ -25,7 +30,7 @@ def protected(function):
             return JsonResponse({
                 "message": "Authentication Failure!"
             }, status=401)
-            
+
         try:
             user_obj = User.objects.get(username=username)
         except User.DoesNotExist:

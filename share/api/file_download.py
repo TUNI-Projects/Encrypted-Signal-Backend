@@ -29,11 +29,11 @@ class FileDownloadAPIv2(APIView):
 
         encrypted_data = file_obj.encrypted_data
         # why am I encoding and decoding??
-        base64_contents = base64.b64encode(
-            encrypted_data.encode('utf-8')).decode('utf-8')
+        # base64_contents = base64.b64encode(
+        #     encrypted_data.encode('utf-8')).decode('utf-8')
         response = {
             "filename": file_obj.original_filename,
-            "content": base64_contents,
+            "content": encrypted_data,
             "file_type": file_obj.file_type,
         }
         return JsonResponse(response, status=200)
