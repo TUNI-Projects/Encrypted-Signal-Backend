@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from django.http import JsonResponse
 from user.models import User
 from share.models import FileModel
-from datetime import datetime, timedelta
+from share.utility.auth import auth_required
 
 
 class ListOfFiles(APIView):
@@ -14,7 +14,8 @@ class ListOfFiles(APIView):
             return JsonResponse({
                 "message": "Missing parameter `username` is missing! Invalid Request"
             }, status=400)
-
+        
+        print(request.user)
         try:
             user_obj = User.objects.get(username=username)
         except User.DoesNotExist:
