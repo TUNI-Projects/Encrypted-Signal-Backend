@@ -27,8 +27,10 @@ SECRET_KEY = config("SECRET_KEY", None)
 if SECRET_KEY is None:
     sys.exit("SECRET KEY CANNOT BE NONE!")
 
+IS_DEBUG = True if config("DEBUG", "False") == True else False
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = IS_DEBUG
 
 ALLOWED_HOSTS = ["*"]
 
