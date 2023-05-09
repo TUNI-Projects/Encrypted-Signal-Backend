@@ -41,3 +41,20 @@ def protected(function):
         request.user = user_obj
         return function(self, request, *args, **kwargs)
     return wrapper
+
+
+def deprecated(function):
+    """deprecated decorator
+
+    Args:
+        function (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    @functools.wraps(function)
+    def wrapper(self, request, *args, **kwargs):
+        return JsonResponse({
+            "message": "This API/Function has been deprecated!"
+        }, status=410)
+    return wrapper

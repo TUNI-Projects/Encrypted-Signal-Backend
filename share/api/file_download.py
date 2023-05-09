@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from django.http import JsonResponse, HttpResponse
 from share.models import FileModel, ShareModel
-from share.utility.auth import protected
+from share.utility.auth import protected, deprecated
 from cryptography.fernet import Fernet, InvalidToken
 import base64
 from share.utility import padding
@@ -82,7 +82,7 @@ class FileDownloadAPIV3(APIView):
 
 class FileDownloadAPIv2(APIView):
 
-    @protected
+    @deprecated
     def get(self, request, file_id):
         owner_obj = request.user
         try:
