@@ -20,8 +20,8 @@ class ShareFileListAPI(APIView):
                 "original_filename": shared_file.file.original_filename,
                 "shared_by": shared_file.file.file_owner.email,
                 "file_type": shared_file.file.file_type,
-                "uploaded_on": shared_file.file.uploaded_at,
-                "shared_on": shared_file.shared_on,
+                "uploaded_at": shared_file.file.uploaded_at,
+                "shared_at": shared_file.shared_on,
             })
         return JsonResponse({
             "shared_files": payload
