@@ -5,6 +5,7 @@ from user.serializer import UserSerializer
 from share.utility.cookie import cookie_monster
 from django.contrib.sessions.backends.db import SessionStore
 from es_backend.settings import DEBUG
+from share.utility import check_password
 
 
 class RegisterAPI(APIView):
@@ -16,7 +17,7 @@ class RegisterAPI(APIView):
 
     def post(self, request):
         IS_DEBUG = DEBUG
-        
+
         data = request.data
         for item in self.REQUIRED_PARAM:
             if item not in data:
@@ -29,11 +30,14 @@ class RegisterAPI(APIView):
 
         username = str(uuid4())[:8]
         data["username"] = username
+        if not check_password(data['password']):
+            return JsonResponse({
+                "message": "Your password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
+            }, status=400)
 
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             new_user = serializer.save()
-
             response = JsonResponse({
                 "status": 201,
                 "message": "new user created successfully",
@@ -47,13 +51,8 @@ class RegisterAPI(APIView):
             session_store.create()
             session_id = session_store.session_key
 
-            response = cookie_monster(
-                response, "username", new_user.username)
             response = cookie_monster(response, "sessionId", session_id)
-            if IS_DEBUG:
-                response['SameSite'] = 'Strict'
-            else:
-                response['SameSite'] = 'None'
+            response['SameSite'] = 'None'
             return response
         else:
             return JsonResponse({

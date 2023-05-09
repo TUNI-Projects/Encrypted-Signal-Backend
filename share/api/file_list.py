@@ -21,6 +21,7 @@ class ListOfFiles(APIView):
                 "file_path": None,
                 "uploaded_at": uploaded_file.uploaded_at,
                 "file_type": uploaded_file.file_type,
+                "file_owner": uploaded_file.file_owner.email,
             })
 
         response = JsonResponse({

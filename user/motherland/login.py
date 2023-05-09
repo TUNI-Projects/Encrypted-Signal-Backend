@@ -50,13 +50,8 @@ class LoginAPI(APIView):
                 session_store.create()
                 session_id = session_store.session_key
 
-                response = cookie_monster(
-                    response, "username", curr_user.username)
                 response = cookie_monster(response, "sessionId", session_id)
-                if IS_DEBUG:
-                    response['SameSite'] = 'Strict'
-                else:
-                    response['SameSite'] = 'None'
+                response['SameSite'] = 'None'
                 return response
             else:
                 return JsonResponse({

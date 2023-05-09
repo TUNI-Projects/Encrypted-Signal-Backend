@@ -4,12 +4,13 @@ from django.http import JsonResponse
 from share.serializer import UploadSerializer, ShareSerializer
 from user.models import User
 from share.utility.auth import protected
+from share.utility import check_password
 
 
 class FileUploadAPI(APIView):
 
     parser_classes = (MultiPartParser, FormParser)
-    REQUIRED_PARAMETERS = ("encrypted_data", "filename")
+    REQUIRED_PARAMETERS = ("file", "filename", "password")
     OPTIONAL_PARAMETERS = ("shared_email", "file_type",)
 
     @protected
@@ -22,9 +23,15 @@ class FileUploadAPI(APIView):
                     "message": "Missing required field {}".format(item)
                 }, status=400)
 
+        password = data.get("password")
         shared_with = data.get("shared_email", None)
         file_type = data.get("file_type", "")
         owner_obj = request.user
+        print(password)
+        if not check_password(password):
+            return JsonResponse({
+                "message": "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
+            }, status=400)
 
         shared_obj = None
         # this is optional
@@ -43,7 +50,7 @@ class FileUploadAPI(APIView):
                 }, status=400)
 
         serializer_payload = {}
-        serializer_payload["encrypted_data"] = data["encrypted_data"]
+        serializer_payload["encrypted_data"] = None
         serializer_payload["original_filename"] = data['filename']
         serializer_payload["file_owner"] = owner_obj.pk
         serializer_payload["file_type"] = file_type

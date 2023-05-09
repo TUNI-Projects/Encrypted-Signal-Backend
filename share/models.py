@@ -14,7 +14,7 @@ class FileModel(models.Model):
     index = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     original_filename = models.CharField(max_length=255, blank=True)
     file = models.FileField(upload_to=update_filename, blank=True)
-    encrypted_data = models.TextField()
+    encrypted_data = models.TextField(null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     file_owner = models.ForeignKey(User, on_delete=models.PROTECT)
     file_type = models.CharField(max_length=255, blank=True)

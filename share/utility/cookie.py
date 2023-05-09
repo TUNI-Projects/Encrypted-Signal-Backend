@@ -7,15 +7,7 @@ def cookie_monster(response: JsonResponse, key: str, val: str):
     expires = datetime.now() + timedelta(hours=12)
     IS_DEBUG = settings.DEBUG
 
-    if IS_DEBUG:
-        response.set_cookie(key, val,
-                            domain='',
-                            path='/',
-                            expires=expires,
-                            secure=False,
-                            samesite='Strict')
-    else:
-        response.set_cookie(key, val,
+    response.set_cookie(key, val,
                             domain='',
                             path='/',
                             expires=expires,
