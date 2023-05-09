@@ -27,7 +27,7 @@ class FileUploadAPI(APIView):
         shared_with = data.get("shared_email", None)
         file_type = data.get("file_type", "")
         owner_obj = request.user
-        print(password)
+        
         if not check_password(password):
             return JsonResponse({
                 "message": "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
@@ -50,6 +50,7 @@ class FileUploadAPI(APIView):
                 }, status=400)
 
         serializer_payload = {}
+        serializer_payload['file'] = data['file']
         serializer_payload["encrypted_data"] = None
         serializer_payload["original_filename"] = data['filename']
         serializer_payload["file_owner"] = owner_obj.pk
