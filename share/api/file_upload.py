@@ -10,6 +10,7 @@ from cryptography.fernet import Fernet
 import base64
 from uuid import uuid4
 
+
 class FileUploadAPI(APIView):
 
     parser_classes = (MultiPartParser, FormParser)
@@ -25,6 +26,11 @@ class FileUploadAPI(APIView):
                 return JsonResponse({
                     "message": "Missing required field {}".format(item)
                 }, status=400)
+
+        if data["file"].size > 10 * 1024 * 1024:
+            return JsonResponse({
+                "message": "{} is too big. Maximum upload limit is 10 MB".format(data["filename"])
+            }, status=400)
 
         password = data.get("password")
         shared_with = data.get("shared_email", None)
@@ -51,14 +57,14 @@ class FileUploadAPI(APIView):
                 return JsonResponse({
                     "message": "You can't share this file with yourself."
                 }, status=400)
-        
+
         # Encryption
         # Generate a Fernet key from the encryption key
         fernet_key = base64.urlsafe_b64encode(padding(password.encode()))
         f = Fernet(fernet_key)
-         # Encrypt the file data using the Fernet key
+        # Encrypt the file data using the Fernet key
         encrypted_data = f.encrypt(data['file'].read())
-        
+
         newfilename = "{}".format(uuid4())
         encrypted_file_path = os.path.join("media/files/", newfilename)
         with open(encrypted_file_path, 'wb') as f:
