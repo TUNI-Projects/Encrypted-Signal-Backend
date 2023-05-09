@@ -4,8 +4,11 @@ from django.http import JsonResponse
 from share.serializer import UploadSerializer, ShareSerializer
 from user.models import User
 from share.utility.auth import protected
-from share.utility import check_password
-
+from share.utility import check_password, padding
+import os
+from cryptography.fernet import Fernet
+import base64
+from uuid import uuid4
 
 class FileUploadAPI(APIView):
 
@@ -27,7 +30,7 @@ class FileUploadAPI(APIView):
         shared_with = data.get("shared_email", None)
         file_type = data.get("file_type", "")
         owner_obj = request.user
-        
+
         if not check_password(password):
             return JsonResponse({
                 "message": "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
@@ -48,10 +51,21 @@ class FileUploadAPI(APIView):
                 return JsonResponse({
                     "message": "You can't share this file with yourself."
                 }, status=400)
+        
+        # Encryption
+        # Generate a Fernet key from the encryption key
+        fernet_key = base64.urlsafe_b64encode(padding(password.encode()))
+        f = Fernet(fernet_key)
+         # Encrypt the file data using the Fernet key
+        encrypted_data = f.encrypt(data['file'].read())
+        
+        newfilename = "{}".format(uuid4())
+        encrypted_file_path = os.path.join("media/files/", newfilename)
+        with open(encrypted_file_path, 'wb') as f:
+            f.write(encrypted_data)
 
         serializer_payload = {}
-        serializer_payload['file'] = data['file']
-        serializer_payload["encrypted_data"] = None
+        serializer_payload["encrypted_data"] = encrypted_file_path
         serializer_payload["original_filename"] = data['filename']
         serializer_payload["file_owner"] = owner_obj.pk
         serializer_payload["file_type"] = file_type

@@ -6,7 +6,7 @@ class UploadSerializer(ModelSerializer):
 
     class Meta:
         model = FileModel
-        fields = ['file', 'original_filename', 'file_owner', 'file_type']
+        fields = ['encrypted_data', 'original_filename', 'file_owner', 'file_type']
 
 
 class ShareSerializer(ModelSerializer):
