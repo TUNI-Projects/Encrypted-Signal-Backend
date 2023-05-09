@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from share.models import FileModel
 from share.utility.auth import protected
 from django.core.exceptions import ValidationError
+import os
 
 
 class FileRemoveAPI(APIView):
@@ -20,7 +21,7 @@ class FileRemoveAPI(APIView):
         original_filename = None
         try:
             file_obj = FileModel.objects.get(index=data["file_id"])
-            original_filename = file_obj.original_filename
+            # original_filename = file_obj.original_filename
         except (FileModel.DoesNotExist, ValidationError):
             return JsonResponse({
                 "status": "File Doesn't exist!"
@@ -31,20 +32,16 @@ class FileRemoveAPI(APIView):
                 "message": "You aren't allowed to perform this action!"
             }, status=403)
 
-        # try:
-        #     file_path = os.path.join(settings.MEDIA_ROOT, file_obj.file.path)
-        #     os.remove(file_path)
-        # except FileNotFoundError:
-        #     # This exception has been added to minimize any critical crash.
-        #     # File might go missing/delete
-        #     # File was deleted during dev anyway
-        #     pass
-
-        # status = os.path.isfile(file_path)  # this should be False, log this.
-        # print("File status: ", status == False)
+        try:
+            file_path = os.path.join(file_obj.encrypted_data)
+            os.remove(file_path)
+        except (FileNotFoundError, OSError, TypeError):
+            # This exception has been added to minimize any critical crash.
+            # File might go missing/delete
+            # File was deleted during dev anyway
+            pass
 
         file_obj.delete()
-
         return JsonResponse({
             "message": "File {} removed successfully!".format(original_filename)
         }, status=202)
