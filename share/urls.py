@@ -2,7 +2,7 @@ from django.urls import path
 from share.api.file_upload import FileUploadAPI
 from share.api.file_list import ListOfFiles
 from share.api.share_file import ShareAPI
-from share.api.file_download import FileDownloadAPIv2
+from share.api.file_download import FileDownloadAPIv2, FileDownloadAPIV3
 from share.api.share_file_list import ShareFileListAPI
 from share.api.file_remove import FileRemoveAPI
 
@@ -15,6 +15,8 @@ urlpatterns = [
     path('delete_file/', FileRemoveAPI.as_view()),
     # v2
     path('download/v2/<str:file_id>/', FileDownloadAPIv2.as_view()),
+    # v3
+    path('download/v3/<str:file_id>/', FileDownloadAPIV3.as_view()),
     
     path('', ShareAPI.as_view()),
 ]
