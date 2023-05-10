@@ -25,7 +25,6 @@ class LoginAPI(APIView):
                 )
 
         sanitized_email = bleach.clean(data["email"], strip=True)
-        print(sanitized_email)
         try:
             curr_user = User.objects.get(email=sanitized_email)
         except User.DoesNotExist:

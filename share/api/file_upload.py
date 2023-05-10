@@ -9,6 +9,7 @@ import os
 from cryptography.fernet import Fernet
 import base64
 from uuid import uuid4
+import bleach
 
 
 class FileUploadAPI(APIView):
@@ -36,6 +37,8 @@ class FileUploadAPI(APIView):
         shared_with = data.get("shared_email", None)
         file_type = data.get("file_type", "")
         owner_obj = request.user
+        data['filename'] = bleach.clean(data["filename"], strip=True)
+        file_type = bleach.clean(file_type, strip=True)
 
         if not check_password(password):
             return JsonResponse({
