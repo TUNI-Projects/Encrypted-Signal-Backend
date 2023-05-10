@@ -4,7 +4,7 @@ from user.motherland.login import LoginAPI
 from user.motherland.logout import LogoutAPI
 
 urlpatterns = [
-    path('register/', RegisterAPI.as_view()),
-    path('login/', LoginAPI.as_view()),
-    path('logout/', LogoutAPI.as_view()),
+    path('register/', RegisterAPI.as_view(), name='register'),
+    path('login/', LoginAPI.as_view(),  name='login'),
+    path('logout/', LogoutAPI.as_view(),  name='logout'),
 ]
