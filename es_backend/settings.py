@@ -14,6 +14,7 @@ import sys
 import os
 from pathlib import Path
 from decouple import config
+import logging
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'es_backend.logging_middleware.RequestLoggingMiddleware',
 
 ]
 
@@ -192,8 +194,31 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # nearly 10 MB.
 # Session
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_NAME = 'sessionid'
-SESSION_COOKIE_AGE = 43200  # 12 hours in seconds 
+SESSION_COOKIE_AGE = 43200  # 12 hours in seconds
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_SAMESITE = 'None'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_SAVE_EVERY_REQUEST = False
+
+# Logging
+LOG_ROOT = os.path.join(BASE_DIR, "log")
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_ROOT, "logfile.log"),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'WARN',
+        },
+        'RequestLoggingMiddleware': {
+            'handlers': ['file'],
+            'level': 'WARN',
+        }, 
+    },
+}

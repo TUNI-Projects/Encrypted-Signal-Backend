@@ -1,7 +1,6 @@
 from django.contrib.sessions.backends.db import SessionStore
 from django.http import JsonResponse
 from rest_framework.views import APIView
-from user.models import User
 from share.utility.auth import protected
 
 
