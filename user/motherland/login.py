@@ -1,3 +1,4 @@
+import bleach
 from datetime import datetime
 
 from django.contrib.auth.hashers import check_password
@@ -5,7 +6,6 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from share.utility.cookie import cookie_monster
-from es_backend.settings import DEBUG
 from user.models import User
 
 
@@ -15,7 +15,6 @@ class LoginAPI(APIView):
 
     def post(self, request):
         data = request.data
-        IS_DEBUG = DEBUG
         for field in self.REQUIRED_PARAMS:
             if field not in data:
                 return JsonResponse(
@@ -24,8 +23,11 @@ class LoginAPI(APIView):
                         "message": "Missing Required Parameter. {} is required".format(field)
                     }, status=400
                 )
+
+        sanitized_email = bleach.clean(data["email"], strip=True)
+        print(sanitized_email)
         try:
-            curr_user = User.objects.get(email=data["email"])
+            curr_user = User.objects.get(email=sanitized_email)
         except User.DoesNotExist:
             curr_user = None
 
@@ -49,7 +51,6 @@ class LoginAPI(APIView):
                 session_store["username"] = curr_user.username
                 session_store.create()
                 session_id = session_store.session_key
-
                 response = cookie_monster(response, "sessionId", session_id)
                 response['SameSite'] = 'None'
                 return response

@@ -45,14 +45,6 @@ class RegisterAPI(APIView):
                 "email": new_user.email,
                 "password": "has been set!"
             }, status=201)
-
-            session_store = SessionStore()
-            session_store["username"] = new_user.username
-            session_store.create()
-            session_id = session_store.session_key
-
-            response = cookie_monster(response, "sessionId", session_id)
-            response['SameSite'] = 'None'
             return response
         else:
             return JsonResponse({
