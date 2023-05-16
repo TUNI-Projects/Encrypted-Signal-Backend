@@ -10,7 +10,7 @@ class ListOfFiles(APIView):
 
     @protected
     def get(self, request):
-        user_obj = request.user
+        user_obj = request.user # from decorator, sessionID
         list_of_files = list(FileModel.objects.filter(file_owner=user_obj.pk))
         response = []
 

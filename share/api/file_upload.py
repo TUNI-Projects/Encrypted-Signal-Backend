@@ -37,6 +37,7 @@ class FileUploadAPI(APIView):
         shared_with = data.get("shared_email", None)
         file_type = data.get("file_type", "")
         owner_obj = request.user
+        # filename sanitization
         data['filename'] = bleach.clean(data["filename"], strip=True)
         file_type = bleach.clean(file_type, strip=True)
 

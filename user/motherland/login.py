@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.sessions.backends.db import SessionStore
 from django.http import JsonResponse
 from rest_framework.views import APIView
-from share.utility.cookie import cookie_monster
+from share.utility.cookie import session_manager
 from user.models import User
 
 
@@ -46,12 +46,7 @@ class LoginAPI(APIView):
                     "username": curr_user.username
                 }, status=202)
 
-                session_store = SessionStore()
-                session_store["username"] = curr_user.username
-                session_store.create()
-                session_id = session_store.session_key
-                response = cookie_monster(response, "sessionId", session_id)
-                response['SameSite'] = 'None'
+                response = session_manager(response, curr_user.username)
                 return response
             else:
                 return JsonResponse({
