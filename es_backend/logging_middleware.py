@@ -14,11 +14,16 @@ class RequestLoggingMiddleware:
         ip_address = request.META.get('REMOTE_ADDR')
         
         # Log request body payload
-        payload = request.body
+        try:
+            payload = request.body
+            payload = payload.decode()
+        except:
+            # generalized exception management
+            payload = None
         
         # Log cookies
         cookies = request.COOKIES
         
-        logger.warn(f'{now} - {ip_address} - {request.method} - {request.path} - Cookies: {cookies} - Payload: {payload.decode()}')
+        logger.warn(f'{now} - {ip_address} - {request.method} - {request.path} - Cookies: {cookies} - Payload: {payload}')
         response = self.get_response(request)
         return response
