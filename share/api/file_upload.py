@@ -28,9 +28,9 @@ class FileUploadAPI(APIView):
                     "message": "Missing required field {}".format(item)
                 }, status=400)
 
-        if data["file"].size > 10 * 1024 * 1024:
+        if data["file"].size > 100 * 1024:
             return JsonResponse({
-                "message": "{} is too big. Maximum upload limit is 10 MB".format(data["filename"])
+                "message": "{} is too big. Maximum upload limit is 100 KB".format(data["filename"])
             }, status=400)
 
         password = data.get("password")
