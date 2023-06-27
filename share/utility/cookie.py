@@ -14,7 +14,7 @@ def cookie_monster(response, key: str, val: str):
     Returns:
         _type_: _description_
     """
-    expires = datetime.now() + timedelta(minutes=1)
+    expires = datetime.now() + timedelta(minutes=15)
     response.set_cookie(key, val,
                         domain='',
                         path='/',
